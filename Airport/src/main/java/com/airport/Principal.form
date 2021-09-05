@@ -356,7 +356,7 @@
             </Container>
             <Component class="javax.swing.JLabel" name="lblFlight">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Flight:"/>
+                <Property name="text" type="java.lang.String" value="Flight ID:"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="lblOrigin">
@@ -689,7 +689,7 @@
             </Component>
             <Component class="javax.swing.JLabel" name="lblModel1">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Airplane:"/>
+                <Property name="text" type="java.lang.String" value="Airplane ID:"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="txtCodAirplane">

@@ -229,7 +229,7 @@ public class Principal extends javax.swing.JFrame {
         txtABinnacle.setRows(5);
         jScrollPane1.setViewportView(txtABinnacle);
 
-        lblFlight.setText("Flight:");
+        lblFlight.setText("Flight ID:");
 
         lblOrigin.setText("Origin:");
 
@@ -440,7 +440,7 @@ public class Principal extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(tAirplanes);
 
-        lblModel1.setText("Airplane:");
+        lblModel1.setText("Airplane ID:");
 
         txtCodAirplane.setEnabled(false);
 
@@ -630,7 +630,6 @@ public class Principal extends javax.swing.JFrame {
 
     public void addAirplane() {
 //        JOptionPane.showMessageDialog(null, "Here airplanes will be add");
-
         boolean a = true;
         if (rBtnAvailable.isSelected()) {
             a = true;
@@ -638,21 +637,22 @@ public class Principal extends javax.swing.JFrame {
             a = false;
         }
         //empty instance
-
         EAirplane air = new EAirplane();
-
         //set infor
-        air.setAvailable(a);
-        air.setModel(txtModelAirplane.getText());
-        air.setPassengerCapacity((int) spinnerPassengerCap.getValue());
-        air.setIdAirplane(airplanes.size());
-        if (regexDouble(txtTankCap.getText())) {
-            air.setTankCapacity(Double.parseDouble(txtTankCap.getText()));
-            airplanes.add(air);
-        } else {
-            JOptionPane.showMessageDialog(this, "Tank capacity value is incorrect. Write again following the next patter: 0 or 0.0");
+        if(txtModelAirplane.getText().equals("") || !rBtnAvailable.isSelected() || !rBtnNonAvailable.isSelected() || (int)spinnerPassengerCap.getValue()==0 || spinnerPassengerCap.getValue().equals("")){
+            JOptionPane.showMessageDialog(this, "Try again please!");
+        }else{
+            air.setAvailable(a);
+            air.setModel(txtModelAirplane.getText());
+            air.setPassengerCapacity((int) spinnerPassengerCap.getValue());
+            air.setIdAirplane(airplanes.size());
+            if (regexDouble(txtTankCap.getText())) {
+                air.setTankCapacity(Double.parseDouble(txtTankCap.getText()));
+                airplanes.add(air);
+            } else {
+                JOptionPane.showMessageDialog(this, "Tank capacity value is incorrect. Write again following the next patter: 0 or 0.0");
+            }
         }
-
     }
 
     public void modifyAirplane() {
@@ -662,78 +662,75 @@ public class Principal extends javax.swing.JFrame {
         } else if (rBtnNonAvailable.isSelected()) {
             a = false;
         }
-
         EAirplane air = new EAirplane();
-        air.setIdAirplane(Integer.parseInt(txtCodAirplane.getText()));
-        air.setAvailable(a);
-        air.setModel(txtModelAirplane.getText());
-        air.setPassengerCapacity((int) spinnerPassengerCap.getValue());
-        if (regexDouble(txtTankCap.getText())) {
-            air.setTankCapacity(Double.parseDouble(txtTankCap.getText()));
-            airplanes.set(air.getIdAirplane(), air);
-        } else {
-            JOptionPane.showMessageDialog(this, "Tank capacity value is incorrect. Write again following the next patter: 0 or 0.0");
+        if(txtModelAirplane.getText().equals("") || !rBtnAvailable.isSelected() || !rBtnNonAvailable.isSelected() || (int)spinnerPassengerCap.getValue()==0 || spinnerPassengerCap.getValue().equals("")){
+            JOptionPane.showMessageDialog(this, "Try again please!");
+        }else{
+            air.setIdAirplane(airplanes.size());
+            air.setAvailable(a);
+            air.setModel(txtModelAirplane.getText());
+            air.setPassengerCapacity((int) spinnerPassengerCap.getValue());
+            if (regexDouble(txtTankCap.getText())) {
+                air.setTankCapacity(Double.parseDouble(txtTankCap.getText()));
+                airplanes.set(air.getIdAirplane(), air);
+            } else {
+                JOptionPane.showMessageDialog(this, "Tank capacity value is incorrect. Write again following the next patter: 0 or 0.0");
+            } 
         }
         //add info
         //addAirplane();
         //modify index
-
     }
 
     public void addFlight() {
-        //JOptionPane.showMessageDialog(null, "Here flights will be add");
-/* private int idFlight;
-    private String origin;
-    private String destiny;
-    private String departureTime;
-    private int expectedDepartureTime;
-    private String arrivalTime;
-    private int expectedArrivalTime;
-    private String airline;
-    private String binnacle;
-    private String status;
-    private int airplane;*/
         //empty instance
         EFlight fli = new EFlight();
-        fli.setIdFlight(flights.size());
-        fli.setOrigin(txtOrigin.getText());
-        fli.setDestiny(txtDestiny.getText());
         fli.setDepartureTime(txtDepartureTime.getText());
         fli.setArrivalTime(txtArrivalTime.getText());
-        if (regexDate(jTextExpectedDepartureTime.getText()) && regexDate(jTextExpectedArrivalTime.getText())) {
-            fli.setExpectedDepartureTime(jTextExpectedDepartureTime.getText());
-            fli.setExpectedArrivalTime(jTextExpectedArrivalTime.getText());
+        
+        fli.setIdFlight(flights.size());
+        
+        if(txtDestiny.getText().equals("") || txtOrigin.getText().equals("")){
+            JOptionPane.showMessageDialog(this, "Try Again please!");
+        }else{
+            fli.setOrigin(txtOrigin.getText());
+            fli.setDestiny(txtDestiny.getText());
             fli.setAirline(jComboAirlines.getSelectedItem().toString());
             fli.setBinnacle(txtABinnacle.getText());
             fli.setStatus(setFlightStatus());
             fli.setAirplane(jComboAirplane.getSelectedIndex());
-            flights.add(fli);
-            JOptionPane.showMessageDialog(this, "Flight created succesfully!");
-
-        } else {
-            JOptionPane.showMessageDialog(this, "Dates are incorrect. Let´s write them again following the next format: dd/mm/yyyy hh:mm or dd-mm-yyyy hh:mm");
+            if (regexDate(jTextExpectedDepartureTime.getText()) && regexDate(jTextExpectedArrivalTime.getText())) {
+                fli.setExpectedDepartureTime(jTextExpectedDepartureTime.getText());
+                fli.setExpectedArrivalTime(jTextExpectedArrivalTime.getText());
+                flights.add(fli);
+                JOptionPane.showMessageDialog(this, "Flight created succesfully!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Dates are incorrect. Let´s write them again following the next format: dd/mm/yyyy hh:mm or dd-mm-yyyy hh:mm");
+            }
         }
-
     }
 
     public void modifyFlight() {
 
         EFlight fli = flights.get(Integer.parseInt(txtFlightID.getText()));
-
-        fli.setOrigin(txtOrigin.getText());
-        fli.setDestiny(txtDestiny.getText());
-        fli.setDepartureTime(txtDepartureTime.getText());
-        fli.setArrivalTime(txtArrivalTime.getText());
-        if (regexDate(jTextExpectedDepartureTime.getText()) && regexDate(jTextExpectedArrivalTime.getText())) {
-            fli.setExpectedDepartureTime(jTextExpectedDepartureTime.getText());
-            fli.setExpectedArrivalTime(jTextExpectedArrivalTime.getText());
+        if(txtDestiny.getText().equals("") || txtOrigin.getText().equals("")){
+            JOptionPane.showMessageDialog(this, "Try Again please!");
+        }else{
+            fli.setOrigin(txtOrigin.getText());
+            fli.setDestiny(txtDestiny.getText());
+            fli.setDepartureTime(txtDepartureTime.getText());
+            fli.setArrivalTime(txtArrivalTime.getText());
             fli.setAirline(jComboAirlines.getSelectedItem().toString());
             fli.setBinnacle(txtABinnacle.getText());
             fli.setStatus(setFlightStatus());
             fli.setAirplane(jComboAirplane.getSelectedIndex());
             flights.set(Integer.parseInt(txtFlightID.getText()), fli);
-        } else {
-            JOptionPane.showMessageDialog(this, "Dates are incorrect. Let´s write them again following the next format: dd/mm/yyyy hh:mm or dd-mm-yyyy hh:mm");
+            if(regexDate(jTextExpectedDepartureTime.getText()) && regexDate(jTextExpectedArrivalTime.getText())) {
+                fli.setExpectedDepartureTime(jTextExpectedDepartureTime.getText());
+                fli.setExpectedArrivalTime(jTextExpectedArrivalTime.getText());
+            } else {
+                JOptionPane.showMessageDialog(this, "Dates are incorrect. Let´s write them again following the next format: dd/mm/yyyy hh:mm or dd-mm-yyyy hh:mm");
+            }
         }
     }
 
@@ -862,20 +859,16 @@ public class Principal extends javax.swing.JFrame {
 
     public void loadComboAirplanes() {
         jComboAirplane.removeAllItems();
-        for (EAirplane plane : airplanes) {
+        airplanes.forEach(plane -> {
             jComboAirplane.addItem(plane.getIdAirplane() + " - " + plane.getModel());
-        }
+        });
     }
 
     public boolean regexDate(String date) {
-        if (!date.isEmpty() ) {
+        if (!date.isEmpty() /*&& !date.isBlank()*/) {
             Pattern pattern = Pattern.compile("^([0-2][0-9]|3[0-1])(\\/|-)(0[1-9]|1[0-2])\\2(\\d{4})(\\s)([0-1][0-9]|2[0-3])(:)([0-5][0-9])$");
             Matcher mat = pattern.matcher(date);
-            if (mat.find()) {
-                return true;
-            } else {
-                return false;
-            }
+            return mat.find();
         } else {
             return false;
         }
@@ -883,14 +876,10 @@ public class Principal extends javax.swing.JFrame {
     }
 
     public boolean regexDouble(String capacity) {
-        if (!capacity.isEmpty()) {
+        if (!capacity.isEmpty() /*&& !capacity.isBlank()*/) {
             Pattern pattern = Pattern.compile("[+-]?([0-9]*[.])?[0-9]+");
             Matcher mat = pattern.matcher(capacity);
-            if (mat.find()) {
-                return true;
-            } else {
-                return false;
-            }
+            return mat.find();
         } else {
             return false;
         }
