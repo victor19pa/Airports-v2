@@ -1,0 +1,41 @@
+We need you to design in a SOLID and optimal way, and to create an object-oriented application with 
+Java to manage the flights for an airport.
+
+
+The shell/console application that you're going to create must handle flight arrivals and departures information; 
+both in time and with delays. For each flight we need to know the country and city of origin / destination, 
+the date and time of departure / arrival, of course the airline and the type of aircraft
+ (model, passenger capacity, range with full fuel tanks) that operates in that flight.
+
+
+You must have an option to enter flights, update them as ontime or delayed (change arrival date and time), 
+cancel them (the flight will no longer arrive, it is required to know why it is canceled) and to classify them as landed 
+(plane on the ground, it will be required to know incidents that occurred during the flight). All this newly detailed information 
+is also necessary to know in a report.
+
+
+You should also have a batch option to enter flights from an excel file that will contain the following columns: 
+flight number, airline, aircraft type, origin / destination, departure / arrival date / time. 
+
+
+It is also required to have a catalog with the types of aircraft that can operate at the airport.
+
+
+It is also required the option of sending by mail the list of flights (departures and arrivals) in excel of a certain day or of a 
+specific flight selected. What we need to know about each flight is: flight number, airline, aircraft type,
+ origin / destination, date / time of departure and arrival, reasons for cancellation (if canceled), incidents on board (if any). 
+
+
+In any report / data output, it will be necessary to report the weather conditions at the station (airport), 
+for which it is required to connect to an API that will return a String with the meteorological information 
+(eg sunny 33 ° and south-east wind , light rain and south wind 20 °, Snow and north wind 0 °, etc).
+
+
+This is what we want from you:
+- Your top-down design, class diagram / UML.
+- Apply ALL the SOLID principles. You must demonstrate and explain your application.
+- Create your application using a Maven project.
+- Apply Google or Oracle Java code styling.
+- Use of good practices.
+- Use dependencies / plugins: lombok, mailing, file generation, code formatter, sonarlint.
+- Create the application with everything described above, all in english.
