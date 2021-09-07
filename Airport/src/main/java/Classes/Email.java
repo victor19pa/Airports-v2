@@ -41,6 +41,7 @@ public class Email {
     }
 
     public void sendReportbyDate(String dateFlight, String mail, List<EFlight> flightList) throws ParseException {
+        
         Date SelectedDate = new SimpleDateFormat("dd/MM/yyyy").parse(dateFlight);
         flightList.removeIf(p -> !p.getDepartureTime().equals(SelectedDate));
         createFile(flightList);
@@ -79,7 +80,7 @@ public class Email {
         cell.setCellValue(flight.getAirline());
 
         cell = row.createCell(2);
-        //cell.setCellValue(flight.getAirplane().getModel());
+        cell.setCellValue(flight.getAirplane());
 
         cell = row.createCell(3);
         cell.setCellValue(flight.getOrigin());
@@ -162,7 +163,7 @@ public class Email {
             try {
 
                 String basePath = new File("").getAbsolutePath();
-                basePath.concat("\\Flight_Report.xlsx");
+                basePath = basePath + "\\Flight_Report.xlsx";
 
                 File f = new File(basePath);
 
