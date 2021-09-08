@@ -613,7 +613,7 @@ public class Principal extends javax.swing.JFrame {
                     Cell Status = rowCol.getCell(4);
                    
             
-                 model.addRow(new Object[]{idsFlights++, AirPlane, AirLine, Origin, Destinity, Status, "Details"});
+                 model.addRow(new Object[]{idsFlights++,(int)AirPlane.getNumericCellValue(), AirLine, Origin, Destinity, Status, "Details"});
                 
                 }
             } catch (IOException ex) {
