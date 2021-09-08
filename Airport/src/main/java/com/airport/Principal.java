@@ -5,12 +5,10 @@ import Entities.EAirplane;
 
 import Entities.EFlight;
 import Entities.EstatusFlight;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -21,10 +19,14 @@ import java.util.regex.Pattern;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.DVConstraint;
+import org.apache.poi.hssf.usermodel.HSSFDataValidation;
 import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.CellRangeAddressList;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataValidation;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
@@ -78,6 +80,7 @@ public class Principal extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         txtEmailSend = new javax.swing.JTextField();
         btnSendEmail = new javax.swing.JButton();
+        btnDowloadExcel = new javax.swing.JButton();
         panelAddFlights = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtABinnacle = new javax.swing.JTextArea();
@@ -174,6 +177,13 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
+        btnDowloadExcel.setText("Descargar Formato");
+        btnDowloadExcel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDowloadExcelActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelFlightsLayout = new javax.swing.GroupLayout(panelFlights);
         panelFlights.setLayout(panelFlightsLayout);
         panelFlightsLayout.setHorizontalGroup(
@@ -182,7 +192,10 @@ public class Principal extends javax.swing.JFrame {
                 .addGap(23, 23, 23)
                 .addGroup(panelFlightsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(scrollPaneMain, javax.swing.GroupLayout.PREFERRED_SIZE, 645, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnImportDoc, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(panelFlightsLayout.createSequentialGroup()
+                        .addComponent(btnImportDoc, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnDowloadExcel))
                     .addGroup(panelFlightsLayout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -199,13 +212,15 @@ public class Principal extends javax.swing.JFrame {
                                 .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(btnSendEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(txtEmailSend))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(31, Short.MAX_VALUE))
         );
         panelFlightsLayout.setVerticalGroup(
             panelFlightsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelFlightsLayout.createSequentialGroup()
                 .addGap(26, 26, 26)
-                .addComponent(btnImportDoc)
+                .addGroup(panelFlightsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnImportDoc)
+                    .addComponent(btnDowloadExcel))
                 .addGap(18, 18, 18)
                 .addComponent(scrollPaneMain, javax.swing.GroupLayout.PREFERRED_SIZE, 279, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -571,7 +586,7 @@ public class Principal extends javax.swing.JFrame {
         BufferedInputStream bis = null;
         HSSFWorkbook wb = null;
         Sheet sheet = null;
-
+        
         String defaultCurrentDirectoryPath = "C:\\Users\\Public\\Desktop";
         JFileChooser excelFileChooser = new JFileChooser(defaultCurrentDirectoryPath);
         int excelChooser = excelFileChooser.showOpenDialog(null);
@@ -585,18 +600,21 @@ public class Principal extends javax.swing.JFrame {
 
                 wb = new HSSFWorkbook(bis);
                 sheet = wb.getSheetAt(0);
-
-                for (int row = 0; row < sheet.getLastRowNum(); row++) {
+                
+                int idsFlights = flights.size();
+                for (int row = 1; row <= sheet.getLastRowNum(); row++) {
                     Row rowCol = sheet.getRow(row);
 
-                    Cell numberFlight = rowCol.getCell(0);
-                    Cell airPlane = rowCol.getCell(1);
-                    Cell origin = rowCol.getCell(2);
-                    Cell destinity = rowCol.getCell(3);
-                    Cell status = rowCol.getCell(4);
-
-                    model.addRow(new Object[]{numberFlight, airPlane, origin, destinity, status, "Detail"});
-
+  
+                    Cell AirPlane = rowCol.getCell(0);
+                    Cell AirLine = rowCol.getCell(1);
+                    Cell Origin = rowCol.getCell(2);
+                    Cell Destinity = rowCol.getCell(3);
+                    Cell Status = rowCol.getCell(4);
+                   
+            
+                 model.addRow(new Object[]{idsFlights++, AirPlane, AirLine, Origin, Destinity, Status, "Details"});
+                
                 }
             } catch (IOException ex) {
                 Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
@@ -619,6 +637,81 @@ public class Principal extends javax.swing.JFrame {
             sendMail.sendReportbyId(Integer.parseInt(txtIdSend.getText()), txtEmailSend.getText(), flights);
         }
     }//GEN-LAST:event_btnSendEmailActionPerformed
+
+    private void btnDowloadExcelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDowloadExcelActionPerformed
+   
+        try {
+            
+       //ubicacion y nombre de archivo excel a descargar
+        String filename = "FormatFlights.xls";
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet sheet = workbook.createSheet("FormatFlights");
+        
+        //encabezado en excel
+        
+        HSSFRow rowhead = sheet.createRow((short) 0);
+        rowhead.createCell(0).setCellValue("AirPlane");
+        rowhead.createCell(1).setCellValue("AirLine");
+        rowhead.createCell(2).setCellValue("Origin");
+        rowhead.createCell(3).setCellValue("Destinity");
+        rowhead.createCell(4).setCellValue("Status");
+
+        
+        //Lista los Ids de los vuelos creados
+        
+        CellRangeAddressList listAirplane = new CellRangeAddressList(
+        1, 20, 0, 0);
+            String ids[] = new String[airplanes.size()];
+            for (int i = 0; i < airplanes.size(); i++) {
+                ids[i] = Integer.toString(airplanes.get(i).getIdAirplane());
+            }
+            
+      DVConstraint airplaneList = DVConstraint.createExplicitListConstraint(
+       ids);
+      DataValidation dataValidation1 = new HSSFDataValidation
+        (listAirplane, airplaneList);
+      dataValidation1.setSuppressDropDownArrow(false);
+      sheet.addValidationData(dataValidation1);
+      
+      //----- fin ----
+      
+       
+       //Lista las aerolineas Disponibles
+       CellRangeAddressList listAirline = new CellRangeAddressList(
+        1, 20, 1, 1);
+            
+      DVConstraint airlineList = DVConstraint.createExplicitListConstraint(
+       new String[]{"Avianca", "Delta Airlines","United Airlines","American Airlines"});
+      DataValidation dataValidation2 = new HSSFDataValidation
+        (listAirline, airlineList);
+      dataValidation2.setSuppressDropDownArrow(false);
+      sheet.addValidationData(dataValidation2);
+      //---fin ----
+      
+      
+      //Lista las aerolineas Disponibles
+       CellRangeAddressList listStatus = new CellRangeAddressList(
+        1, 20, 4, 4);
+            
+      DVConstraint statusList = DVConstraint.createExplicitListConstraint(
+       new String[]{"ACTIVATED", "DELAYED","LANDED","CANCEL"});
+      DataValidation dataValidation3 = new HSSFDataValidation
+        (listStatus, statusList);
+      dataValidation3.setSuppressDropDownArrow(false);
+      sheet.addValidationData(dataValidation3);
+      //---fin ----
+      
+        FileOutputStream fileOut = new FileOutputStream(filename);
+        workbook.write(fileOut);
+        fileOut.close();
+        JOptionPane.showMessageDialog(null, "Excel Descargado Con exito!");
+        
+        
+        
+    } catch (Exception ex) {
+        System.out.println(ex);
+    }  
+    }//GEN-LAST:event_btnDowloadExcelActionPerformed
 
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -888,6 +981,7 @@ public class Principal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddAirplane;
     private javax.swing.JButton btnAddFlight;
+    private javax.swing.JButton btnDowloadExcel;
     private javax.swing.ButtonGroup btnGroupAddModify;
     private javax.swing.ButtonGroup btnGroupAirplanes;
     private javax.swing.JButton btnImportDoc;
