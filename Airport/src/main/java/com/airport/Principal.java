@@ -180,7 +180,7 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
-        btnDowloadExcel.setText("Descargar Formato");
+        btnDowloadExcel.setText("Download format");
         btnDowloadExcel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnDowloadExcelActionPerformed(evt);
@@ -620,7 +620,7 @@ public class Principal extends javax.swing.JFrame {
                 wb = new HSSFWorkbook(bis);
                 sheet = wb.getSheetAt(0);
 
-                int idsFlights = flightsArrayList.size();
+              //  int idsFlights = flightsArrayList.size();
                 for (int row = 1; row <= sheet.getLastRowNum(); row++) {
                     Row rowCol = sheet.getRow(row);
 
@@ -629,11 +629,19 @@ public class Principal extends javax.swing.JFrame {
                     Cell Origin = rowCol.getCell(2);
                     Cell Destinity = rowCol.getCell(3);
                     Cell Status = rowCol.getCell(4);
-                   
-            
-                 tableModelFlights.addRow(new Object[]{idsFlights++,(int)AirPlane.getNumericCellValue(), AirLine, Origin, Destinity, Status, "Details"});
-                
+                    
+                    EFlight oFlight = new EFlight();
+                    oFlight.setIdFlight(flightsArrayList.size());
+                    oFlight.setAirplane((int) AirPlane.getNumericCellValue());
+                    oFlight.setAirline(AirLine.toString());
+                    oFlight.setOrigin(Origin.toString());
+                    oFlight.setDestiny(Destinity.toString());
+                    oFlight.setStatus((EstatusFlight.valueOf(Status.toString()).name()));
+                    flightsArrayList.add(oFlight);
+                    loadTableFlights();
+
                 }
+
             } catch (IOException ex) {
                 Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -713,7 +721,7 @@ public class Principal extends javax.swing.JFrame {
             FileOutputStream fileOut = new FileOutputStream(filename);
             workbook.write(fileOut);
             fileOut.close();
-            JOptionPane.showMessageDialog(null, "Excel Descargado Con exito!");
+            JOptionPane.showMessageDialog(null, "Excel downloaded successfully!");
 
         } catch (Exception ex) {
             System.out.println(ex);
@@ -764,7 +772,7 @@ public class Principal extends javax.swing.JFrame {
         }
 
     }
-    
+
 //    public EAirplane createObjectAirplane(){
 //        EAirplane oAirplane = new EAirplane();
 //        oAirplane.setIdAirplane(Integer.parseInt(txtCodAirplane.getText()));
@@ -780,7 +788,6 @@ public class Principal extends javax.swing.JFrame {
 //        }
 //        
 //    }
-
     public void createFlight() {
 
         EFlight oFlight = new EFlight();
