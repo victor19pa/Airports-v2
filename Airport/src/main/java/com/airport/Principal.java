@@ -629,9 +629,10 @@ public class Principal extends javax.swing.JFrame {
                     Cell Origin = rowCol.getCell(2);
                     Cell Destinity = rowCol.getCell(3);
                     Cell Status = rowCol.getCell(4);
-
-                    tableModelFlights.addRow(new Object[]{idsFlights++, AirPlane, AirLine, Origin, Destinity, Status, "Details"});
-
+                   
+            
+                 tableModelFlights.addRow(new Object[]{idsFlights++,(int)AirPlane.getNumericCellValue(), AirLine, Origin, Destinity, Status, "Details"});
+                
                 }
             } catch (IOException ex) {
                 Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
