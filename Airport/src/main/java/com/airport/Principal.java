@@ -1,6 +1,7 @@
 package com.airport;
 
 import Classes.Email;
+import Classes.Excel;
 import Classes.RegexClass;
 import Classes.Weather;
 import Entities.EAirplane;
@@ -21,6 +22,7 @@ import java.util.regex.Pattern;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import lombok.Setter;
 import org.apache.poi.hssf.usermodel.DVConstraint;
 import org.apache.poi.hssf.usermodel.HSSFDataValidation;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -31,7 +33,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataValidation;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-
 public class Principal extends javax.swing.JFrame {
 
     private ArrayList<EAirplane> airplanesArrayList;
@@ -47,7 +48,7 @@ public class Principal extends javax.swing.JFrame {
         airplanesArrayList.add(new EAirplane(3, "Model4", 80, 50.0, false));
         flightsArrayList = new ArrayList<EFlight>();
         flightsArrayList.add(new EFlight(0, "Toronto,Canada", "La libertad,El Salvador", "-", "04/09/2021 15:00", "-",
-                "4/09/2021 21:00", "Avianca", "Departure did succesfully! /n Good weather!", EstatusFlight.ACTIVATED.name(), 0));
+                "4/09/2021 21:00", "Avianca", "Departure did succesfully! \nGood weather!", EstatusFlight.ACTIVATED.name(), 0));
         flightsArrayList.add(new EFlight(1, "Texas,EE.UU", "La libertad,El Salvador", "-", "05/09/2021 21:00", "-",
                 "06/09/2021 1:00", "United Airlines", "Departure did succesfully! \nGood weather!", EstatusFlight.LANDED.name(), 2));
         initComponents();
@@ -252,7 +253,7 @@ public class Principal extends javax.swing.JFrame {
 
         lblOrigin.setText("Origin:");
 
-        lblDestiny.setText("Destiny:");
+        lblDestiny.setText("Arrival city:");
 
         lblAirplane.setText("Airline:");
 
@@ -367,7 +368,7 @@ public class Principal extends javax.swing.JFrame {
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelAddFlightsLayout.createSequentialGroup()
                                 .addGap(188, 188, 188)
                                 .addComponent(buttonWatchWeather, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(17, Short.MAX_VALUE))
+                .addContainerGap(9, Short.MAX_VALUE))
         );
         panelAddFlightsLayout.setVerticalGroup(
             panelAddFlightsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -600,53 +601,8 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_tAirplanesMouseClicked
 
     private void btnImportDocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImportDocActionPerformed
-        File excelFile;
-        FileInputStream fis = null;
-        BufferedInputStream bis = null;
-        HSSFWorkbook wb = null;
-        Sheet sheet = null;
-
-        String defaultCurrentDirectoryPath = "C:\\Users\\Public\\Desktop";
-        JFileChooser excelFileChooser = new JFileChooser(defaultCurrentDirectoryPath);
-        int excelChooser = excelFileChooser.showOpenDialog(null);
-
-        if (excelChooser == JFileChooser.APPROVE_OPTION) {
-
-            try {
-                excelFile = excelFileChooser.getSelectedFile();
-                fis = new FileInputStream(excelFile);
-                bis = new BufferedInputStream(fis);
-
-                wb = new HSSFWorkbook(bis);
-                sheet = wb.getSheetAt(0);
-
-              //  int idsFlights = flightsArrayList.size();
-                for (int row = 1; row <= sheet.getLastRowNum(); row++) {
-                    Row rowCol = sheet.getRow(row);
-
-                    Cell AirPlane = rowCol.getCell(0);
-                    Cell AirLine = rowCol.getCell(1);
-                    Cell Origin = rowCol.getCell(2);
-                    Cell Destinity = rowCol.getCell(3);
-                    Cell Status = rowCol.getCell(4);
-                    
-                    EFlight oFlight = new EFlight();
-                    oFlight.setIdFlight(flightsArrayList.size());
-                    oFlight.setAirplane((int) AirPlane.getNumericCellValue());
-                    oFlight.setAirline(AirLine.toString());
-                    oFlight.setOrigin(Origin.toString());
-                    oFlight.setDestiny(Destinity.toString());
-                    oFlight.setStatus((EstatusFlight.valueOf(Status.toString()).name()));
-                    flightsArrayList.add(oFlight);
-                    loadTableFlights();
-
-                }
-
-            } catch (IOException ex) {
-                Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
+      Excel.importFromExcelDocument(flightsArrayList);
+        loadTableFlights();
     }//GEN-LAST:event_btnImportDocActionPerformed
 
     private void btnSendEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendEmailActionPerformed
@@ -665,67 +621,8 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSendEmailActionPerformed
 
     private void btnDowloadExcelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDowloadExcelActionPerformed
-
-        try {
-
-            //ubicacion y nombre de archivo excel a descargar
-            String filename = "FormatFlights.xls";
-            HSSFWorkbook workbook = new HSSFWorkbook();
-            HSSFSheet sheet = workbook.createSheet("FormatFlights");
-
-            //encabezado en excel
-            HSSFRow rowhead = sheet.createRow((short) 0);
-            rowhead.createCell(0).setCellValue("AirPlane");
-            rowhead.createCell(1).setCellValue("AirLine");
-            rowhead.createCell(2).setCellValue("Origin");
-            rowhead.createCell(3).setCellValue("Destinity");
-            rowhead.createCell(4).setCellValue("Status");
-
-            //Lista los Ids de los vuelos creados
-            CellRangeAddressList listAirplane = new CellRangeAddressList(
-                    1, 20, 0, 0);
-            String ids[] = new String[airplanesArrayList.size()];
-            for (int i = 0; i < airplanesArrayList.size(); i++) {
-                ids[i] = Integer.toString(airplanesArrayList.get(i).getIdAirplane());
-            }
-
-            DVConstraint airplaneList = DVConstraint.createExplicitListConstraint(
-                    ids);
-            DataValidation dataValidation1 = new HSSFDataValidation(listAirplane, airplaneList);
-            dataValidation1.setSuppressDropDownArrow(false);
-            sheet.addValidationData(dataValidation1);
-
-            //----- fin ----
-            //Lista las aerolineas Disponibles
-            CellRangeAddressList listAirline = new CellRangeAddressList(
-                    1, 20, 1, 1);
-
-            DVConstraint airlineList = DVConstraint.createExplicitListConstraint(
-                    new String[]{"Avianca", "Delta Airlines", "United Airlines", "American Airlines"});
-            DataValidation dataValidation2 = new HSSFDataValidation(listAirline, airlineList);
-            dataValidation2.setSuppressDropDownArrow(false);
-            sheet.addValidationData(dataValidation2);
-            //---fin ----
-
-            //Lista las aerolineas Disponibles
-            CellRangeAddressList listStatus = new CellRangeAddressList(
-                    1, 20, 4, 4);
-
-            DVConstraint statusList = DVConstraint.createExplicitListConstraint(
-                    new String[]{"ACTIVATED", "DELAYED", "LANDED", "CANCEL"});
-            DataValidation dataValidation3 = new HSSFDataValidation(listStatus, statusList);
-            dataValidation3.setSuppressDropDownArrow(false);
-            sheet.addValidationData(dataValidation3);
-            //---fin ----
-
-            FileOutputStream fileOut = new FileOutputStream(filename);
-            workbook.write(fileOut);
-            fileOut.close();
-            JOptionPane.showMessageDialog(null, "Excel downloaded successfully!");
-
-        } catch (Exception ex) {
-            System.out.println(ex);
-        }
+        Excel.downloadExcelFormat(airplanesArrayList);
+      
     }//GEN-LAST:event_btnDowloadExcelActionPerformed
 
     private void buttonWatchWeatherActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonWatchWeatherActionPerformed
@@ -773,21 +670,6 @@ public class Principal extends javax.swing.JFrame {
 
     }
 
-//    public EAirplane createObjectAirplane(){
-//        EAirplane oAirplane = new EAirplane();
-//        oAirplane.setIdAirplane(Integer.parseInt(txtCodAirplane.getText()));
-//        oAirplane.setAvailable(setAirPlaneStatus());
-//        oAirplane.setModel(txtModelAirplane.getText());
-//        oAirplane.setPassengerCapacity((int) spinnerPassengerCap.getValue());
-//        if (RegexClass.isAValidatedDouble(txtTankCap.getText())) {
-//            oAirplane.setTankCapacity(Double.parseDouble(txtTankCap.getText()));
-//            return oAirplane;
-//            } else {
-//            JOptionPane.showMessageDialog(this, "Tank capacity value is incorrect. Write again following the next patter: 0 or 0.0");
-//            return null;
-//        }
-//        
-//    }
     public void createFlight() {
 
         EFlight oFlight = new EFlight();
@@ -897,7 +779,6 @@ public class Principal extends javax.swing.JFrame {
                 if (!airplane.isAvailable()) {
                     status = "Not available";
                 }
-
                 tableModelAirplanes.addRow(new Object[]{
                     airplane.getIdAirplane(),
                     airplane.getModel(),
@@ -905,7 +786,6 @@ public class Principal extends javax.swing.JFrame {
                     airplane.getPassengerCapacity(),
                     status,
                     "Details"});
-
             }
 
         }
@@ -916,7 +796,6 @@ public class Principal extends javax.swing.JFrame {
     public void clickDetailsFlight() {
         if (tblInfoMain.getSelectedColumn() == 6) {
             int rowSelected = tblInfoMain.getSelectedRow();
-
             txtFlightID.setText(String.valueOf(flightsArrayList.get(rowSelected).getIdFlight()));
             txtOrigin.setText(flightsArrayList.get(rowSelected).getOrigin());
             txtDestiny.setText(flightsArrayList.get(rowSelected).getDestiny());
@@ -928,7 +807,6 @@ public class Principal extends javax.swing.JFrame {
             jTextExpectedArrivalTime.setText(String.valueOf(flightsArrayList.get(rowSelected).getExpectedArrivalTime()));
             getFlightStatus(rowSelected);
             txtABinnacle.setText(flightsArrayList.get(rowSelected).getBinnacle());
-
         }
     }
 
