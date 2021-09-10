@@ -12,7 +12,6 @@ public class TestRegexClass extends TestCase {
     
     public void testValidateDate(){
         testing();  
-        //cambiar el primer valor a true y en el 2do poner el patron correcto
         
         assertEquals(true, RegexClass.isAValidatedDate("09/09/2021 00:00"));
     }
