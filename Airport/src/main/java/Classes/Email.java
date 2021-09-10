@@ -54,8 +54,8 @@ public class Email {
     public void createFile(List<EFlight> flightList) {
 
         try {
-             String basePathTemplate = new File("").getAbsolutePath();
-                basePathTemplate = basePathTemplate + "\\Flight_Report_Template.xlsx";
+            String basePathTemplate = new File("").getAbsolutePath();
+            basePathTemplate = basePathTemplate + "\\Flight_Report_Template.xlsx";
             XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream(basePathTemplate));
 
 
