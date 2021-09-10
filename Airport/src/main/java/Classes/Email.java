@@ -18,6 +18,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import java.awt.image.ColorConvertOp;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -35,26 +37,31 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 public class Email {
 
     public void sendReportbyId(int idFlight, String mail, List<EFlight> flightList) {
+        
         flightList.removeIf(p -> p.getIdFlight() != idFlight);
         createFile(flightList);
         SendMail(mail);
     }
 
-    public void sendReportbyDate(String dateFlight, String mail, List<EFlight> flightList) throws ParseException {
-        
-        Date SelectedDate = new SimpleDateFormat("dd/MM/yyyy").parse(dateFlight);
-        flightList.removeIf(p -> !p.getDepartureTime().equals(SelectedDate));
+    public void sendReportbyDate(String dateFlight, String mail, List<EFlight> flightList) throws ParseException {       
+        flightList.removeIf(p -> !p.getDepartureTime().substring(0,10).equals(dateFlight));
         createFile(flightList);
         SendMail(mail);
+        
+        //09-09-2021 05:00 = 09-09-2021
     }
 
     public void createFile(List<EFlight> flightList) {
 
         try {
-            XSSFWorkbook workbook = new XSSFWorkbook();
+             String basePathTemplate = new File("").getAbsolutePath();
+                basePathTemplate = basePathTemplate + "\\Flight_Report_Template.xlsx";
+            XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream(basePathTemplate));
 
-            XSSFSheet sheet = workbook.createSheet("Report");// creating a blank sheet
-            int rownum = 0;
+
+            //XSSFSheet sheet = workbook.createSheet("Report");// creating a blank sheet
+            XSSFSheet sheet = workbook.getSheet("Report");
+            int rownum = 4;
             for (EFlight flight : flightList) {
                 Row row = sheet.createRow(rownum++);
                 createList(flight, row);
@@ -73,40 +80,35 @@ public class Email {
 
     private static void createList(EFlight flight, Row row) // creating cells for each row
     {
-        Cell cell = row.createCell(0);
+        int IC = 1; //TO IDENFITY WHAT COLUMN THE PRINT WILL START
+        
+        Cell cell = row.createCell(IC+0);
         cell.setCellValue(flight.getIdFlight());
 
-        cell = row.createCell(1);
+        cell = row.createCell(IC+1);
         cell.setCellValue(flight.getAirline());
 
-        cell = row.createCell(2);
+        cell = row.createCell(IC+2);
         cell.setCellValue(flight.getAirplane());
 
-        cell = row.createCell(3);
+        cell = row.createCell(IC+3);
         cell.setCellValue(flight.getOrigin());
 
-        cell = row.createCell(4);
+        cell = row.createCell(IC+4);
         cell.setCellValue(flight.getDestiny());
 
-        cell = row.createCell(5);
+        cell = row.createCell(IC+5);
         cell.setCellValue(flight.getDepartureTime());
 
-        cell = row.createCell(6);
+        cell = row.createCell(IC+6);
         cell.setCellValue(flight.getArrivalTime());
+       
+            cell = row.createCell(IC+7);
+            cell.setCellValue(flight.getStatus());
 
-        if (flight.getStatus() == EstatusFlight.CANCEL.name()) {
-            cell = row.createCell(7);
+            cell = row.createCell(IC+8);
             cell.setCellValue(flight.getBinnacle());
-
-            cell = row.createCell(8);
-            cell.setCellValue("");
-        } else {
-            cell = row.createCell(7);
-            cell.setCellValue("");
-
-            cell = row.createCell(8);
-            cell.setCellValue(flight.getBinnacle());
-        }
+        
 
     }
 
